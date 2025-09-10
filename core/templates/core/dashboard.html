@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load l10n %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block header_title %}Dashboard Financeiro{% endblock %}
+
+{% block content %}
+
+<div class="bg-white p-4 rounded-lg shadow-md mb-6">
+    <form method="GET" action="{% url 'dashboard' %}">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+            <span class="font-medium text-gray-600 mb-2 sm:mb-0">Filtrar por Período:</span>
+            <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <button type="submit" name="periodo" value="hoje" class="px-4 py-2 text-sm font-medium rounded-md transition-colors {% if periodo_ativo == 'hoje' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">Hoje</button>
+                <button type="submit" name="periodo" value="semana" class="px-4 py-2 text-sm font-medium rounded-md transition-colors {% if periodo_ativo == 'semana' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">Esta Semana</button>
+                <button type="submit" name="periodo" value="mes" class="px-4 py-2 text-sm font-medium rounded-md transition-colors {% if periodo_ativo == 'mes' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">Este Mês</button>
+                <button type="submit" name="periodo" value="ano" class="px-4 py-2 text-sm font-medium rounded-md transition-colors {% if periodo_ativo == 'ano' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">Este Ano</button>
+                <a href="{% url 'dashboard' %}" class="px-4 py-2 text-sm font-medium rounded-md text-center transition-colors {% if periodo_ativo == 'tudo' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">Ver Tudo</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">✅ Total Faturado</h3>
+        <p class="mt-2 text-4xl font-bold text-gray-900">R$ {{ total_vendas|localize }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">❌ Custos Totais</h3>
+        <p class="mt-2 text-4xl font-bold text-gray-900">R$ {{ custos_totais|localize }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">💰 Lucro Líquido</h3>
+        <p class="mt-2 text-4xl font-bold {% if lucro_liquido >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+            R$ {{ lucro_liquido|localize }}
+        </p>
+    </div>
+</div>
+
+{% endblock %}

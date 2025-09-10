@@ -31,6 +31,7 @@
                 </td>
                 <td>{{ saida.data|date:"d/m/Y" }}</td>
                 <td class="actions">
+                    <a href="{% url 'gerar-recibo' saida.pk %}" target="_blank">Recibo</a>
                     <a href="{% url 'saida-update' saida.pk %}">Editar</a>
                     <a href="{% url 'saida-delete' saida.pk %}" style="color: #d32f2f;">Excluir</a>
                 </td>

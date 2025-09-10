@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo - {{ saida.nome }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        /* Estilos para impressão */
+        @media print {
+            body {
+                font-size: 12pt;
+            }
+            .no-print {
+                display: none;
+            }
+            .recibo-container {
+                box-shadow: none;
+                border: none;
+            }
+        }
+        
+        body {
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            padding-top: 2rem;
+        }
+
+        .recibo-container {
+            width: 800px;
+            padding: 2.5rem;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .recibo-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .total-section {
+            margin-top: 2.5rem;
+            text-align: right;
+        }
+        
+        .total-section h3 {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="recibo-container">
+        <header class="recibo-header">
+            <h1>RECIBO</h1>
+            <p><strong>Serviço/Venda:</strong> {{ saida.nome }}</p>
+            <p><strong>Data:</strong> {{ saida.data|date:"d/m/Y" }}</p>
+        </header>
+
+        <section>
+            <h4>Descrição do Serviço/Venda:</h4>
+            <p>{{ saida.descricao|linebreaksbr|default:"Nenhuma descrição fornecida." }}</p>
+            
+            {% if saida.entradas_relacionadas.all %}
+                <hr>
+                <h5>Custos Associados (Uso Interno):</h5>
+                <ul>
+                    {% for entrada in saida.entradas_relacionadas.all %}
+                        <li>{{ entrada.nome }}: R$ {{ entrada.valor|localize }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+
+        <section class="total-section">
+            <h3>TOTAL: R$ {{ saida.valor|localize }}</h3>
+        </section>
+        
+        <footer class="no-print" style="text-align: center; margin-top: 3rem;">
+            <button onclick="window.print()">Imprimir Recibo</button>
+            <a href="javascript:window.close()" role="button" class="secondary">Fechar</a>
+        </footer>
+    </main>
+
+</body>
+</html>

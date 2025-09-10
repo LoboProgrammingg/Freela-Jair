@@ -91,3 +91,17 @@ class Saida(models.Model):
         verbose_name = "Saída"
         verbose_name_plural = "Saídas"
         ordering = ['-data']
+
+class Funcionario(models.Model):
+    nome = models.CharField(max_length=200, verbose_name="Nome do Funcionário")
+    salario = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Salário Mensal")
+    pagamento_efetuado = models.BooleanField(default=False, verbose_name="Salário Pago no Mês?")
+    data_pagamento = models.DateField(null=True, blank=True, verbose_name="Data de Pagamento")
+
+    def __str__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = "Funcionário"
+        verbose_name_plural = "Funcionários"
+        ordering = ['nome']
