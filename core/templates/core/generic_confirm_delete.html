@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Confirmar Exclusão</h2>
+    <p>Você tem certeza que deseja excluir <strong>"{{ object }}"</strong>?</p>
+    <p>Esta ação não pode ser desfeita.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="contrast">Sim, excluir</button>
+        <a href="{{ request.META.HTTP_REFERER|escape }}" role="button" class="secondary">Cancelar</a>
+    </form>
+{% endblock %}

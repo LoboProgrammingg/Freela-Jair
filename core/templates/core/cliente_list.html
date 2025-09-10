@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <header class="page-header">
+        <h2 style="margin: 0;">Clientes</h2>
+        <a href="{% url 'cliente-create' %}" role="button">Adicionar Cliente</a>
+    </header>
+    <hr>
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Nome do Cliente</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.nome_cliente }}</td>
+                <td>{{ cliente.empresa.nome_empresa|default:"Autônomo" }}</td>
+                <td class="actions">
+                    <a href="{% url 'cliente-update' cliente.pk %}">Editar</a>
+                    <a href="{% url 'cliente-delete' cliente.pk %}" style="color: #d32f2f;">Excluir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Nenhum cliente cadastrado ainda.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

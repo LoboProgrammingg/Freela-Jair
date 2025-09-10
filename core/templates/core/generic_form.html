@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>
+        {% if 'empresa' in request.path %}
+            {% if form.instance.pk %}Editar Empresa{% else %}Nova Empresa{% endif %}
+        {% elif 'cliente' in request.path %}
+            {% if form.instance.pk %}Editar Cliente{% else %}Novo Cliente{% endif %}
+        {% endif %}
+    </h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+{% endblock %}
