@@ -7,6 +7,8 @@ from django.db import models
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from django.shortcuts import redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 from collections import defaultdict
 
 from .models import Empresa, Cliente, Entrada, Saida, Funcionario
@@ -160,6 +162,19 @@ class FuncionarioListView(ListView):
         context['status_ativo'] = self.status # Envia o status para o template
         
         return context
+    
+@require_POST  # Garante que esta view só aceita requisições POST
+def confirmar_pagamento(request, pk):
+    # Busca o funcionário ou retorna um erro 404 se não existir
+    funcionario = get_object_or_404(Funcionario, pk=pk)
+    
+    # Atualiza os campos do funcionário
+    funcionario.pagamento_efetuado = True
+    funcionario.data_pagamento = timezone.now().date() # Define a data de pagamento como hoje
+    funcionario.save()
+    
+    # Redireciona de volta para a lista de funcionários
+    return redirect('funcionario-list')
 
 class FuncionarioCreateView(CreateView):
     model = Funcionario
