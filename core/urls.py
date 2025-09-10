@@ -7,7 +7,8 @@ from .views import (
     FuncionarioListView, FuncionarioCreateView, FuncionarioUpdateView, FuncionarioDeleteView,
     DashboardView,
     ReciboDetailView,
-    ReciboPDFView
+    ReciboPDFView,
+    HistoricoPagamentosView,
 )
 
 urlpatterns = [
@@ -44,5 +45,6 @@ urlpatterns = [
     path('funcionarios/', FuncionarioListView.as_view(), name='funcionario-list'),
     path('funcionarios/novo/', FuncionarioCreateView.as_view(), name='funcionario-create'),
     path('funcionarios/<int:pk>/editar/', FuncionarioUpdateView.as_view(), name='funcionario-update'),
+    path('funcionarios/historico-pagamentos/', HistoricoPagamentosView.as_view(), name='historico-pagamentos'), # <-- NOVA ROTA AQUI
     path('funcionarios/<int:pk>/deletar/', FuncionarioDeleteView.as_view(), name='funcionario-delete'),
 ]

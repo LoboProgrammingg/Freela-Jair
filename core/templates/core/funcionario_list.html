@@ -8,18 +8,25 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-sm font-medium text-gray-500">Total de Funcionários</h3>
+        <h3 class="text-sm font-medium text-gray-500">Total de Funcionários (Exibidos)</h3>
         <p class="mt-1 text-3xl font-semibold text-gray-900">{{ total_funcionarios }}</p>
     </div>
     <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-sm font-medium text-gray-500">Custo Mensal Total</h3>
+        <h3 class="text-sm font-medium text-gray-500">Custo Mensal (Exibidos)</h3>
         <p class="mt-1 text-3xl font-semibold text-gray-900">R$ {{ custo_mensal_total|localize }}</p>
     </div>
 </div>
 
 <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4 flex justify-between items-center border-b">
-        <h2 class="text-xl font-semibold text-gray-700">Lista de Funcionários</h2>
+    <div class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b space-y-4 sm:space-y-0">
+        <form method="GET" class="flex items-center space-x-2">
+            <label for="status" class="text-sm font-medium text-gray-700">Filtrar por:</label>
+            <select name="status" id="status" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <option value="todos" {% if status_ativo == 'todos' %}selected{% endif %}>Todos</option>
+                <option value="pago" {% if status_ativo == 'pago' %}selected{% endif %}>Pagos</option>
+                <option value="pendente" {% if status_ativo == 'pendente' %}selected{% endif %}>Pendentes</option>
+            </select>
+        </form>
         <a href="{% url 'funcionario-create' %}" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
             Adicionar Funcionário
         </a>
@@ -58,7 +65,7 @@
             {% empty %}
             <tr>
                 <td colspan="4" class="text-center py-10 text-gray-500">
-                    Nenhum funcionário cadastrado ainda.
+                    Nenhum funcionário encontrado para este filtro.
                 </td>
             </tr>
             {% endfor %}

@@ -7,6 +7,7 @@ from django.db import models
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from collections import defaultdict
 
 from .models import Empresa, Cliente, Entrada, Saida, Funcionario
 
@@ -126,13 +127,38 @@ class FuncionarioListView(ListView):
     template_name = 'core/funcionario_list.html'
     context_object_name = 'funcionarios'
 
+    def get_queryset(self):
+        # Inicia com todos os funcionários
+        queryset = super().get_queryset()
+        
+        # Pega o parâmetro 'status' da URL. O padrão é 'todos'.
+        self.status = self.request.GET.get('status', 'todos')
+
+        # Filtra o queryset com base no status
+        if self.status == 'pago':
+            queryset = queryset.filter(pagamento_efetuado=True)
+        elif self.status == 'pendente':
+            queryset = queryset.filter(pagamento_efetuado=False)
+        
+        # Se for 'todos', não faz nada e retorna todos
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_funcionarios = Funcionario.objects.count()
-        custo_total_qs = Funcionario.objects.aggregate(custo_total=Sum('salario'))
+        
+        # O queryset já vem filtrado pelo método get_queryset()
+        funcionarios_filtrados = context['object_list']
+
+        # Calcula os totais baseados na lista JÁ FILTRADA
+        total_funcionarios = funcionarios_filtrados.count()
+        custo_total_qs = funcionarios_filtrados.aggregate(custo_total=Sum('salario'))
         custo_total = custo_total_qs['custo_total'] or 0
+
+        # Adiciona os totais e o status ativo ao contexto
         context['total_funcionarios'] = total_funcionarios
         context['custo_mensal_total'] = custo_total
+        context['status_ativo'] = self.status # Envia o status para o template
+        
         return context
 
 class FuncionarioCreateView(CreateView):
@@ -146,6 +172,33 @@ class FuncionarioUpdateView(UpdateView):
     fields = ['nome', 'salario', 'pagamento_efetuado', 'data_pagamento']
     template_name = 'core/generic_form.html'
     success_url = reverse_lazy('funcionario-list')
+
+class HistoricoPagamentosView(ListView):
+    model = Funcionario
+    template_name = 'core/historico_pagamentos.html'
+    context_object_name = 'pagamentos'
+
+    def get_queryset(self):
+        # Buscamos apenas funcionários com pagamento efetuado e data de pagamento definida,
+        # ordenados pela data de pagamento mais recente.
+        return Funcionario.objects.filter(
+            pagamento_efetuado=True,
+            data_pagamento__isnull=False
+        ).order_by('-data_pagamento')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Agrupando os pagamentos por mês e ano
+        pagamentos_agrupados = defaultdict(list)
+        for funcionario in context['pagamentos']:
+            # Formata a data como "Setembro de 2025" para usar como chave do dicionário
+            chave_mes_ano = funcionario.data_pagamento.strftime('%B de %Y').capitalize()
+            pagamentos_agrupados[chave_mes_ano].append(funcionario)
+
+        # Adiciona o dicionário agrupado ao contexto
+        context['pagamentos_agrupados'] = dict(pagamentos_agrupados)
+        return context
 
 class FuncionarioDeleteView(DeleteView):
     model = Funcionario
